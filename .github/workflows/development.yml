@@ -23,7 +23,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with: 
           name: build
-          path: .
+          path: |
+            .
+            !.git
   Docker-frontend:
     runs-on: self-hosted
     needs: Build
