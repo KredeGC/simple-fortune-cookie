@@ -29,8 +29,6 @@ jobs:
     container: golang:1.18
     needs: Build
     steps:
-      - name: Remove old build
-        run: rm -r *
       - name: Download build
         uses: actions/download-artifact@v3
         with:
@@ -42,10 +40,9 @@ jobs:
         run: cd frontend && go test
   Integration-test:
     runs-on: self-hosted
+    container: ubuntu:20.04
     needs: Unit-test
     steps:
-      - name: Remove old build
-        run: sudo rm -r *
       - name: Download build
         uses: actions/download-artifact@v3
         with:
@@ -55,10 +52,9 @@ jobs:
         run: echo "TODO 04 Integration testing"
   Docker-push-backend:
     runs-on: self-hosted
+    container: ubuntu:20.04
     needs: [Unit-test, Integration-test]
     steps:
-      - name: Remove old build
-        run: sudo rm -r *
       - name: Download code
         uses: actions/download-artifact@v3
         with:
@@ -77,10 +73,9 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/backend:latest
   Docker-push-frontend:
     runs-on: self-hosted
+    container: ubuntu:20.04
     needs: [Unit-test, Integration-test]
     steps:
-      - name: Remove old build
-        run: sudo rm -r *
       - name: Download code
         uses: actions/download-artifact@v3
         with:
