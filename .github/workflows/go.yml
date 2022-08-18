@@ -10,9 +10,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build backend
-        run: cd ./backend/ && go build ./
+        run: cd backend && go build .
       - name: Build frontend
-        run: cd ./frontend/ && go build ./
+        run: cd frontend && go build .
       - name: Upload build
         uses: actions/upload-artifact@v2
         with: 
@@ -28,4 +28,4 @@ jobs:
           name: build
           path: .
       - name: Test
-        run: echo "Test!"
+        run: cd frontend && go test
