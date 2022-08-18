@@ -32,6 +32,11 @@ jobs:
         run: apk update && apk add build-base
       - name: Test
         run: cd frontend && go test
+      - name: Upload build
+        uses: actions/upload-artifact@v2
+        with: 
+          name: build
+          path: .
   Docker-build-frontend:
     runs-on: self-hosted
     needs: [Test]
