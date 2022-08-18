@@ -1,9 +1,6 @@
 version: '3.1'
 
 services:
-  backend:
-    ports:
-      - 9000:9000
   frontend:
     ports:
       - 8080:8080
