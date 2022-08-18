@@ -7,7 +7,7 @@ on:
 
 jobs:
   Build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     container: golang:1.18
     steps:
       - name: Checkout
@@ -19,33 +19,44 @@ jobs:
       - name: Upload build
         uses: actions/upload-artifact@v3
         with: 
-          name: backend
+          name: build
           path: |
             .
             !.git
             !.github
-  Test-frontend:
-    runs-on: ubuntu-latest
+  Unit-test:
+    runs-on: self-hosted
     container: golang:1.18
     needs: Build
     steps:
       - name: Download build
         uses: actions/download-artifact@v3
         with:
-          name: frontend
+          name: build
           path: .
       - name: Install GCC
         run: apt update && apt install build-essential -y
       - name: Test
         run: cd frontend && go test
-  Docker-push-backend:
+  Integration-test:
     runs-on: self-hosted
     needs: Build
+    steps:
+      - name: Download build
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: .
+      - name: Get request
+        run: echo "TODO 04 Integration testing"
+  Docker-push-backend:
+    runs-on: self-hosted
+    needs: [Unit-test, Integration-test]
     steps:
       - name: Download code
         uses: actions/download-artifact@v3
         with:
-          name: backend
+          name: build
           path: .
       - name: Login to DockerHub
         uses: docker/login-action@v2
@@ -60,12 +71,12 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/backend:latest
   Docker-push-frontend:
     runs-on: self-hosted
-    needs: Test-frontend
+    needs: [Unit-test, Integration-test]
     steps:
       - name: Download code
         uses: actions/download-artifact@v3
         with:
-          name: frontend
+          name: build
           path: .
       - name: Login to DockerHub
         uses: docker/login-action@v2

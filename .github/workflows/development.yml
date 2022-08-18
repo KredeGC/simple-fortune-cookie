@@ -24,7 +24,7 @@ jobs:
             .
             !.git
             !.github
-  Test-frontend:
+  Unit-test:
     runs-on: self-hosted
     container: golang:1.18
     needs: Build
