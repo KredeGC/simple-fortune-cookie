@@ -58,7 +58,7 @@ jobs:
     needs: [Unit-test, Integration-test]
     steps:
       - name: Remove old build
-        run: rm -r *
+        run: sudo rm -r *
       - name: Download code
         uses: actions/download-artifact@v3
         with:
@@ -80,7 +80,7 @@ jobs:
     needs: [Unit-test, Integration-test]
     steps:
       - name: Remove old build
-        run: rm -r *
+        run: sudo rm -r *
       - name: Download code
         uses: actions/download-artifact@v3
         with:
