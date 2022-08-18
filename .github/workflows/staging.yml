@@ -41,7 +41,7 @@ jobs:
   Integration-test:
     runs-on: self-hosted
     container: ubuntu:20.04
-    needs: Unit-test
+    needs: Build
     steps:
       - name: Download build
         uses: actions/download-artifact@v3
@@ -52,7 +52,7 @@ jobs:
         run: echo "TODO 04 Integration testing"
   Docker-push-backend:
     runs-on: self-hosted
-    container: ubuntu:20.04
+    container: docker:latest
     needs: [Unit-test, Integration-test]
     steps:
       - name: Download code
@@ -73,7 +73,7 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/backend:latest
   Docker-push-frontend:
     runs-on: self-hosted
-    container: ubuntu:20.04
+    container: docker:latest
     needs: [Unit-test, Integration-test]
     steps:
       - name: Download code
