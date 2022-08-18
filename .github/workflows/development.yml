@@ -38,3 +38,17 @@ jobs:
             .
             !.git
             !.github
+  Test-frontend:
+    runs-on: ubuntu-latest
+    container: golang:1.18
+    needs: Build-frontend
+    steps:
+      - name: Download build
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend
+          path: .
+      - name: Install GCC
+        run: apt update && apt install build-essential -y
+      - name: Test
+        run: cd frontend && go test
