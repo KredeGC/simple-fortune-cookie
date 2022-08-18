@@ -1,0 +1,31 @@
+name: Go CI
+
+on: [push, pull_request]
+
+jobs:
+  Build:
+    runs-on: self-hosted
+    container: go:1.18-alpine
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build backend
+        run: go build ./backend/
+      - name: Build frontend
+        run: go build ./frontend/
+      - name: Upload build
+        uses: actions/upload-artifact@v2
+        with: 
+          name: code
+          path: .
+  Test:
+    runs-on: self-hosted
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Download code
+        uses: actions/download-artifact@v2
+        with:
+          name: code
+          path: .
+      - name: Test
+        run: echo "Test!"
