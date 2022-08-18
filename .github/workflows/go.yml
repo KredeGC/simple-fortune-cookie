@@ -34,7 +34,7 @@ jobs:
         run: cd frontend && go test
   Docker:
     runs-on: self-hosted
-    needs: Test
+    needs: [Test]
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
