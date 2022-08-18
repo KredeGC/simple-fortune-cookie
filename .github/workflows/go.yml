@@ -29,7 +29,7 @@ jobs:
           name: build
           path: .
       - name: Install GCC
-        run: apk update && apk add build-base
+        run: apt update && apt install build-essential
       - name: Test
         run: cd frontend && go test
       - name: Upload build
