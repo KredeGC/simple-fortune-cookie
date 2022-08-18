@@ -28,6 +28,8 @@ jobs:
         with:
           name: build
           path: .
+      - name: Install GCC
+        run: apt update && apt install build-essential
       - name: Test
         run: cd frontend && go test
   Docker:
