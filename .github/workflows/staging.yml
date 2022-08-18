@@ -10,8 +10,8 @@ on:
 
 jobs:
   Build:
-    runs-on: self-hosted
-    container: golang:1.18-alpine
+    runs-on: ubuntu-latest
+    container: golang:1.18
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -20,13 +20,16 @@ jobs:
       - name: Build frontend
         run: cd frontend && go build .
       - name: Upload build
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with: 
           name: build
-          path: .
+          path: |
+            .
+            !.git
+            !.github
   Test:
-    runs-on: self-hosted
-    container: golang:1.18-alpine
+    runs-on: ubuntu-latest
+    container: golang:1.18
     needs: Build
     if: github.event_name == 'pull_request'
     steps:
@@ -36,6 +39,11 @@ jobs:
           name: build
           path: .
       - name: Install GCC
-        run: apk update && apk add build-base
+        run: apt update && apt install build-essential -y
       - name: Test
         run: cd frontend && go test
+      - name: Upload build
+        uses: actions/upload-artifact@v2
+        with: 
+          name: build
+          path: .

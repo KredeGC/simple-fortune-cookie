@@ -17,10 +17,13 @@ jobs:
       - name: Build frontend
         run: cd frontend && go build .
       - name: Upload build
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with: 
           name: build
-          path: .
+          path: |
+            .
+            !.git
+            !.github
   Test:
     runs-on: self-hosted
     container: golang:1.18-alpine
