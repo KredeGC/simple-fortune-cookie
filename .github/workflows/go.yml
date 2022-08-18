@@ -20,10 +20,11 @@ jobs:
           path: .
   Test:
     runs-on: self-hosted
+    container: golang:1.18-alpine
     needs: Build
     if: github.event_name == 'pull_request'
     steps:
-      - name: Download code
+      - name: Download build
         uses: actions/download-artifact@v2
         with:
           name: build
