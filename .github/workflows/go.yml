@@ -1,11 +1,10 @@
 name: Go CI
 
 on: [push, pull_request]
-
 jobs:
   Build:
-    runs-on: self-hosted
-    container: golang:1.18-alpine
+    runs-on: ubuntu-latest
+    container: golang:1.18
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -19,8 +18,8 @@ jobs:
           name: build
           path: .
   Test:
-    runs-on: self-hosted
-    container: golang:1.18-alpine
+    runs-on: ubuntu-latest
+    container: golang:1.18
     needs: Build
     if: github.event_name == 'pull_request'
     steps:
@@ -30,6 +29,51 @@ jobs:
           name: build
           path: .
       - name: Install GCC
-        run: apk update && apk add build-base
+        run: apt update && apt install build-essential -y
       - name: Test
         run: cd frontend && go test
+      - name: Upload build
+        uses: actions/upload-artifact@v2
+        with: 
+          name: build
+          path: .
+  Docker-build-frontend:
+    runs-on: ubuntu-latest
+    needs: [Test]
+    steps:
+      - name: Download code
+        uses: actions/download-artifact@v1
+        with:
+          name: build
+          path: .
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/app:latest
+  Docker-build-backend:
+    runs-on: ubuntu-latest
+    needs: [Test]
+    steps:
+      - name: Download code
+        uses: actions/download-artifact@v1
+        with:
+          name: build
+          path: .
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/app:latest
