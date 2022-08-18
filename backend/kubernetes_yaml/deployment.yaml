@@ -100,13 +100,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-backend
+  name: deployment-backend
   labels:
-    app: service-backend
+    app: deployment-backend
 spec:
   type: ClusterIP
   selector:
-    app: service-backend
+    app: deployment-backend
   ports:
     - protocol: TCP
       port: 9000
@@ -119,11 +119,11 @@ kind: Service
 metadata:
   name: service-frontend
   labels:
-    app: service-frontend
+    app: deployment-frontend
 spec:
   type: NodePort
   selector:
-    app: service-frontend
+    app: deployment-frontend
   ports:
     - protocol: TCP
       port: 8080
