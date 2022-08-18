@@ -1,0 +1,51 @@
+name: Go CI
+
+on:
+  push:
+    branches:
+      'production'
+
+jobs:
+  Build:
+    runs-on: self-hosted
+    container: golang:1.18-alpine
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build backend
+        run: cd backend && go build .
+      - name: Build frontend
+        run: cd frontend && go build .
+      - name: Upload build
+        uses: actions/upload-artifact@v2
+        with: 
+          name: build
+          path: .
+  Test:
+    runs-on: self-hosted
+    container: golang:1.18-alpine
+    needs: Build
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Download build
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: .
+      - name: Install GCC
+        run: apk update && apk add build-base
+      - name: Test
+        run: cd frontend && go test
+  Deploy:
+    runs-on: self-hosted
+    needs: Test
+    steps:
+      - name: Download build
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: .
+      - name: Run backend
+        run: cd backend && go run . &
+      - name: Run frontend
+        run: cd frontend && go run . &
