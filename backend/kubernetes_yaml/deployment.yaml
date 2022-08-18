@@ -5,6 +5,7 @@ metadata:
   labels:
     app: deployment-backend
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: deployment-backend
@@ -17,12 +18,12 @@ spec:
       - name: docker-backend
         image: brugbrug/backend
         env:
-          - name: BACKEND_DNS
-            value: backend
-          - name: BACKEND_PORT
-            value: "9000"
+        - name: FRONTEND_DNS
+          value: service-frontend
+        - name: FRONTEND_PORT
+          value: "8080"
 
-###################Frontend######################
+---
 
 apiVersion: apps/v1
 kind: Deployment
@@ -31,6 +32,7 @@ metadata:
   labels:
     app: deployment-frontend
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: deployment-frontend
@@ -43,47 +45,57 @@ spec:
       - name: docker-frontend
         image: brugbrug/frontend
         env:
-          - name: FRONTEND_DNS
-            value: frontend
-          - name: FRONTEND_PROT
-            value: "9000"
+        - name: BACKEND_DNS
+          value: service-backend
+        - name: BACKEND_PORT
+          value: "9000"
 
-########################Redis##########################
+---
 
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata: 
   name: redis
 spec:
-  containers:
-  - name: redis
-    image: redis:5.0.4
-    command:
-      - redis-server
-      - "/redis-master/redis.conf"
-    env:
-    - name: MASTER
-      value: "true"
-    ports:
-    - containerPort: 6379
-    resources:
-      limits:
-        cpu: "0.1"
-    volumeMounts:
-    - mountPath: /redis-master-data
-      name: config
-  volumes:
-    - name: data
-      emptyDir: {}
-    - name: config
-      configMap:
-        name: configmap-redis
-        items:
-        - key: redis-config
-          path: redis.conf
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:5.0.4
+        command:
+          - redis-server
+          - "/redis-master/redis.conf"
+        env:
+        - name: MASTER
+          value: "true"
+        ports:
+        - containerPort: 6379
+        resources:
+          limits:
+            cpu: "0.1"
+        volumeMounts:
+        - mountPath: /redis-master-data
+          name: data
+        - mountPath: /redis-master
+          name: config
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: configmap-redis
+            items:
+            - key: redis-config
+              path: redis.conf
 
 
-##########################Services#####################
+---
 
 apiVersion: v1
 kind: Service
@@ -92,13 +104,15 @@ metadata:
   labels:
     app: service-backend
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: service-backend
   ports:
     - protocol: TCP
       port: 9000
       targetPort: 9000
+
+---
 
 apiVersion: v1
 kind: Service
@@ -114,6 +128,8 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 8080
+
+---
 
 apiVersion: v1
 kind: Service
