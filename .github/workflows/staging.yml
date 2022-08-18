@@ -59,8 +59,12 @@ jobs:
         with:
           name: build
           path: .
-      - name: Get request
-        run: echo "TODO 04 Integration testing"
+      - name: Run docker-compose
+        run: docker-compose -p ${{ github.sha }} -f docker-compose.yml -f docker-compose.dev.yml up -d
+      - name: Test requests
+        run: ./curl-test.sh
+      - name: Stop running process
+        run: docker-compose -p ${{ github.sha }} down
   Docker-build-backend:
     runs-on: self-hosted
     needs: [Unit-test, Integration-test]

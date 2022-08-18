@@ -4,15 +4,17 @@ services:
   backend:
     container_name: backend_con
     build: ./backend/
-    ports:
-      - 9000:9000
-  
+    networks:
+      - internal
   frontend:
     container_name: frontend_con
     build: ./frontend/
-    ports:
-      - 8080:8080
     environment:
       - BACKEND_DNS=backend_con
     depends_on:
       - backend
+    networks:
+      - internal
+
+networks:
+  internal:
