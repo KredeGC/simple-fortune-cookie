@@ -29,6 +29,8 @@ jobs:
     container: golang:1.18
     needs: Build
     steps:
+      - name: Remove old build
+        run: rm -r .
       - name: Download build
         uses: actions/download-artifact@v3
         with:
@@ -42,6 +44,8 @@ jobs:
     runs-on: self-hosted
     needs: Build
     steps:
+      - name: Remove old build
+        run: rm -r .
       - name: Download build
         uses: actions/download-artifact@v3
         with:
@@ -53,6 +57,8 @@ jobs:
     runs-on: self-hosted
     needs: [Unit-test, Integration-test]
     steps:
+      - name: Remove old build
+        run: rm -r .
       - name: Download code
         uses: actions/download-artifact@v3
         with:
@@ -73,6 +79,8 @@ jobs:
     runs-on: self-hosted
     needs: [Unit-test, Integration-test]
     steps:
+      - name: Remove old build
+        run: rm -r .
       - name: Download code
         uses: actions/download-artifact@v3
         with:
