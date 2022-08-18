@@ -10,9 +10,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build backend
-        run: cd ./backend/ && go build ./backend/
+        run: cd ./backend/ && go build ./
       - name: Build frontend
-        run: cd ../frontend/ && go build ./frontend/
+        run: cd ../frontend/ && go build ./
       - name: Upload build
         uses: actions/upload-artifact@v2
         with: 
