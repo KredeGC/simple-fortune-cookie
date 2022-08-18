@@ -8,5 +8,4 @@ RUN go build /app/
 
 EXPOSE 8080
 
-CMD ["go run /app/frontend"]
-
+CMD ["go", "run", "/app/"]
