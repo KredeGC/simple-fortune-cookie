@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-backend
+  labels:
+    app: deployment-backend
+spec:
+  selector:
+    matchLabels:
+      app: deployment-backend
+  template:
+    metadata:
+      labels:
+        app: deployment-backend
+    spec:
+      containers:
+      - name: docker-backend
+        image: brugbrug/backend
+        env:
+          - name: BACKEND_DNS
+            value: backend
+          - name: BACKEND_PORT
+            value: "9000"
+
+###################Frontend######################
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-frontend
+  labels:
+    app: deployment-frontend
+spec:
+  selector:
+    matchLabels:
+      app: deployment-frontend
+  template:
+    metadata:
+      labels:
+        app: deployment-frontend
+    spec:
+      containers:
+      - name: docker-frontend
+        image: brugbrug/frontend
+        env:
+          - name: FRONTEND_DNS
+            value: frontend
+          - name: FRONTEND_PROT
+            value: "9000"
+
+########################Redis##########################
+
+apiVersion: v1
+kind: Deployment
+metadata: 
+  name: redis
+spec:
+  containers:
+  - name: redis
+    image: redis:5.0.4
+    command:
+      - redis-server
+      - "/redis-master/redis.conf"
+    env:
+    - name: MASTER
+      value: "true"
+    ports:
+    - containerPort: 6379
+    resources:
+      limits:
+        cpu: "0.1"
+    volumeMounts:
+    - mountPath: /redis-master-data
+      name: config
+  volumes:
+    - name: data
+      emptyDir: {}
+    - name: config
+      configMap:
+        name: configmap-redis
+        items:
+        - key: redis-config
+          path: redis.conf
+
+
+##########################Services#####################
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-backend
+  labels:
+    app: service-backend
+spec:
+  type: NodePort
+  selector:
+    app: service-backend
+  ports:
+    - protocol: TCP
+      port: 9000
+      targetPort: 9000
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-frontend
+  labels:
+    app: service-frontend
+spec:
+  type: NodePort
+  selector:
+    app: service-frontend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  labels:
+    app: redis
+spec:
+  ports:
+    - port: 6379
+  clusterIP: None
+  selector:
+    app: redis

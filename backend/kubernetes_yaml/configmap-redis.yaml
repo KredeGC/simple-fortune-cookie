@@ -4,5 +4,5 @@ metadata:
   name: configmap-redis
 data:
   redis-config: |
-    maxmemory 2mb
+    maxmemory 200mb
     maxmemory-policy allkeys-lru   
