@@ -62,7 +62,7 @@ jobs:
       - name: Run docker-compose
         run: docker-compose -p ${{ github.sha }} -f docker-compose.yml -f docker-compose.dev.yml up -d
       - name: Test requests
-        run: ./curl-test.sh
+        run: sudo chmod +x ./curl-test.sh && ./curl-test.sh
       - name: Stop running process
         run: docker-compose -p ${{ github.sha }} down
   Docker-push-backend:
