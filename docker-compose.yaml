@@ -3,14 +3,14 @@ version: '3.1'
 services:
   backend:
     build: ./backend/
-    ports:
-      - 9000:9000
     networks:
-      - internal
+      internal:
+        aliases:
+          - backend
   frontend:
     build: ./frontend/
     environment:
-      - BACKEND_DNS=backend_con
+      - BACKEND_DNS=backend
     depends_on:
       - backend
     networks:
