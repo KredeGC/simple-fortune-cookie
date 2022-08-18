@@ -1,9 +1,13 @@
-name: Go CI
+name: Production CD
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      'production'
+
 jobs:
   Build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     container: golang:1.18
     steps:
       - name: Checkout
@@ -13,18 +17,20 @@ jobs:
       - name: Build frontend
         run: cd frontend && go build .
       - name: Upload build
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with: 
           name: build
-          path: .
-  Test:
-    runs-on: ubuntu-latest
+          path: |
+            .
+            !.git
+            !.github
+  Unit-test:
+    runs-on: self-hosted
     container: golang:1.18
     needs: Build
-    if: github.event_name == 'pull_request'
     steps:
       - name: Download build
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build
           path: .
@@ -32,37 +38,23 @@ jobs:
         run: apt update && apt install build-essential -y
       - name: Test
         run: cd frontend && go test
-      - name: Upload build
-        uses: actions/upload-artifact@v2
-        with: 
-          name: build
-          path: .
-  Docker-build-frontend:
-    runs-on: ubuntu-latest
-    needs: [Test]
+  Integration-test:
+    runs-on: self-hosted
+    needs: Build
     steps:
-      - name: Download code
-        uses: actions/download-artifact@v1
+      - name: Download build
+        uses: actions/download-artifact@v3
         with:
           name: build
           path: .
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          context: ./frontend
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/app:latest
-  Docker-build-backend:
-    runs-on: ubuntu-latest
-    needs: [Test]
+      - name: Get request
+        run: echo "TODO 04 Integration testing"
+  Docker-push-backend:
+    runs-on: self-hosted
+    needs: [Unit-test, Integration-test]
     steps:
       - name: Download code
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v3
         with:
           name: build
           path: .
@@ -76,4 +68,37 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/app:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/backend:latest
+  Docker-push-frontend:
+    runs-on: self-hosted
+    needs: [Unit-test, Integration-test]
+    steps:
+      - name: Download code
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: .
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+  Deploy:
+    runs-on: self-hosted
+    needs: [Docker-push-backend, Docker-push-frontend]
+    steps:
+      - name: Download build
+        uses: actions/download-artifact@v3
+        with:
+          name: backend
+          path: .
+      - name: Stop running process
+        run: docker-compose down
+      - name: Run docker-compose
+        run: docker-compose up -d

@@ -1,0 +1,40 @@
+name: Development CI
+
+on:
+  push:
+    branches:
+      'dev/**'
+
+jobs:
+  Build:
+    runs-on: self-hosted
+    container: golang:1.18
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build backend
+        run: cd backend && go build .
+      - name: Build frontend
+        run: cd frontend && go build .
+      - name: Upload build
+        uses: actions/upload-artifact@v3
+        with: 
+          name: build
+          path: |
+            .
+            !.git
+            !.github
+  Unit-test:
+    runs-on: self-hosted
+    container: golang:1.18
+    needs: Build
+    steps:
+      - name: Download build
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: .
+      - name: Install GCC
+        run: apt update && apt install build-essential -y
+      - name: Test
+        run: cd frontend && go test
