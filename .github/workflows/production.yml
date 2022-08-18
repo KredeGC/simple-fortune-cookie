@@ -6,7 +6,7 @@ on:
       'production'
 
 jobs:
-  Build-backend:
+  Build:
     runs-on: ubuntu-latest
     container: golang:1.18
     steps:
@@ -14,6 +14,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Build backend
         run: cd backend && go build .
+      - name: Build frontend
+        run: cd frontend && go build .
       - name: Upload build
         uses: actions/upload-artifact@v3
         with: 
@@ -22,26 +24,10 @@ jobs:
             .
             !.git
             !.github
-  Build-frontend:
-    runs-on: ubuntu-latest
-    container: golang:1.18
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Build frontend
-        run: cd frontend && go build .
-      - name: Upload build
-        uses: actions/upload-artifact@v3
-        with: 
-          name: frontend
-          path: |
-            .
-            !.git
-            !.github
   Test-frontend:
     runs-on: ubuntu-latest
     container: golang:1.18
-    needs: Build-frontend
+    needs: Build
     steps:
       - name: Download build
         uses: actions/download-artifact@v3
@@ -54,7 +40,7 @@ jobs:
         run: cd frontend && go test
   Docker-push-backend:
     runs-on: self-hosted
-    needs: Build-backend
+    needs: Build
     steps:
       - name: Download code
         uses: actions/download-artifact@v3
@@ -101,5 +87,7 @@ jobs:
         with:
           name: backend
           path: .
+      - name: Stop running process
+        run: docker-compose down
       - name: Run docker-compose
-        run: docker-compose up
+        run: docker-compose up -d
