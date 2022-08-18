@@ -135,4 +135,4 @@ jobs:
       - name: Stop running process
         run: docker-compose down
       - name: Run docker-compose
-        run: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+        run: docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d
