@@ -30,7 +30,7 @@ jobs:
     needs: Build
     steps:
       - name: Remove old build
-        run: sudo rm -r *
+        run: rm -r *
       - name: Download build
         uses: actions/download-artifact@v3
         with:
