@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Build backendhttps://vscode.inst67.z1.eficode.academy/?folder=/home/ubuntu/simple-fortune-cookie
+      - name: Build backend
         run: cd backend && go build .
       - name: Build frontend
         run: cd frontend && go build .
@@ -29,6 +29,12 @@ jobs:
     container: golang:1.18
     needs: Build
     steps:
+      - name: Cleanup build folder
+        run: |
+          ls -la ./
+          sudo rm -rf ./* || true
+          sudo rm -rf ./.??* || true
+          ls -la ./
       - name: Download build
         uses: actions/download-artifact@v3
         with:
@@ -40,9 +46,14 @@ jobs:
         run: cd frontend && go test
   Integration-test:
     runs-on: self-hosted
-    container: ubuntu:20.04
     needs: Build
     steps:
+      - name: Cleanup build folder
+        run: |
+          ls -la ./
+          sudo rm -rf ./* || true
+          sudo rm -rf ./.??* || true
+          ls -la ./
       - name: Download build
         uses: actions/download-artifact@v3
         with:
@@ -52,9 +63,14 @@ jobs:
         run: echo "TODO 04 Integration testing"
   Docker-build-backend:
     runs-on: self-hosted
-    container: docker:latest
     needs: [Unit-test, Integration-test]
     steps:
+      - name: Cleanup build folder
+        run: |
+          ls -la ./
+          sudo rm -rf ./* || true
+          sudo rm -rf ./.??* || true
+          ls -la ./
       - name: Download code
         uses: actions/download-artifact@v3
         with:
@@ -73,9 +89,14 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/backend:latest
   Docker-build-frontend:
     runs-on: self-hosted
-    container: docker:latest
     needs: [Unit-test, Integration-test]
     steps:
+      - name: Cleanup build folder
+        run: |
+          ls -la ./
+          sudo rm -rf ./* || true
+          sudo rm -rf ./.??* || true
+          ls -la ./
       - name: Download code
         uses: actions/download-artifact@v3
         with:
