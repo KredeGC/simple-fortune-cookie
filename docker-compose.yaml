@@ -2,12 +2,10 @@ version: '3.1'
 
 services:
   backend:
-    container_name: backend_con
     build: ./backend/
     networks:
       - internal
   frontend:
-    container_name: frontend_con
     build: ./frontend/
     environment:
       - BACKEND_DNS=backend_con
