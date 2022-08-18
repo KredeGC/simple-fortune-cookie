@@ -12,7 +12,7 @@ jobs:
       - name: Build backend
         run: cd ./backend/ && go build ./
       - name: Build frontend
-        run: cd ../frontend/ && go build ./
+        run: cd ./frontend/ && go build ./
       - name: Upload build
         uses: actions/upload-artifact@v2
         with: 
