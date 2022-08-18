@@ -92,3 +92,16 @@ jobs:
           context: ./frontend
           push: false
           tags: ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+  Deploy:
+    runs-on: self-hosted
+    needs: [Docker-build-backend, Docker-build-frontend]
+    steps:
+      - name: Download build
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: .
+      - name: Stop running process
+        run: docker-compose down
+      - name: Run docker-compose
+        run: docker-compose up -d
