@@ -31,10 +31,9 @@ jobs:
     runs-on: ubuntu-latest
     container: golang:1.18
     needs: Build
-    if: github.event_name == 'pull_request'
     steps:
       - name: Download build
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build
           path: .

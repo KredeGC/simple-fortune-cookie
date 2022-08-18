@@ -27,12 +27,26 @@ jobs:
             .
             !.git
             !.github
-  Docker-build-frontend:
+  Test:
     runs-on: self-hosted
+    container: golang:1.18-alpine
     needs: Build
     steps:
+      - name: Download build
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: .
+      - name: Install GCC
+        run: apk update && apk add build-base
+      - name: Test
+        run: cd frontend && go test
+  Docker-build-frontend:
+    runs-on: self-hosted
+    needs: Test
+    steps:
       - name: Download code
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v3
         with:
           name: build
           path: .
@@ -49,10 +63,10 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/frontend:latest
   Docker-build-backend:
     runs-on: self-hosted
-    needs: Build
+    needs: Test
     steps:
       - name: Download code
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v3
         with:
           name: build
           path: .
