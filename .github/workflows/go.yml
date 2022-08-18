@@ -50,8 +50,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: ./frontend
-          File: ./Dockerfile
+          context: ./frontend/Dockerfile
           push: true
           tags: user/app:latest
   Docker-build-backend:
@@ -72,7 +71,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: ./backend
-          file: ./Dockerfile
+          context: ./backend/Dockerfile
           push: true
           tags: user/app:latest
