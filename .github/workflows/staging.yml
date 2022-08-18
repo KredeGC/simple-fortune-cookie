@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Build backend
+      - name: Build backendhttps://vscode.inst67.z1.eficode.academy/?folder=/home/ubuntu/simple-fortune-cookie
         run: cd backend && go build .
       - name: Build frontend
         run: cd frontend && go build .
@@ -40,6 +40,7 @@ jobs:
         run: cd frontend && go test
   Integration-test:
     runs-on: self-hosted
+    container: ubuntu:20.04
     needs: Build
     steps:
       - name: Download build
@@ -49,8 +50,9 @@ jobs:
           path: .
       - name: Get request
         run: echo "TODO 04 Integration testing"
-  Docker-push-backend:
+  Docker-build-backend:
     runs-on: self-hosted
+    container: docker:latest
     needs: [Unit-test, Integration-test]
     steps:
       - name: Download code
@@ -69,8 +71,9 @@ jobs:
           context: ./backend
           push: false
           tags: ${{ secrets.DOCKER_USERNAME }}/backend:latest
-  Docker-push-frontend:
+  Docker-build-frontend:
     runs-on: self-hosted
+    container: docker:latest
     needs: [Unit-test, Integration-test]
     steps:
       - name: Download code
