@@ -38,3 +38,20 @@ jobs:
         run: apt update && apt install build-essential -y
       - name: Test
         run: cd frontend && go test
+  Integration-test:
+    runs-on: self-hosted
+    needs: Build
+    steps:
+      - name: Cleanup build folder
+        run: |
+          ls -la ./
+          sudo rm -rf ./* || true
+          sudo rm -rf ./.??* || true
+          ls -la ./
+      - name: Download build
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: .
+      - name: Run test suite
+        run: sudo chmod +x ci/test.sh && ci/test.sh ${{ github.sha }}

@@ -59,14 +59,8 @@ jobs:
         with:
           name: build
           path: .
-      - name: Run docker-compose
-        run: docker-compose -p ${{ github.sha }} -f docker-compose.yml -f docker-compose.dev.yml up --build -d
-      - name: Test GET
-        run: sudo chmod +x ./curl-get.sh && ./curl-get.sh
-      - name: Test POST
-        run: sudo chmod +x ./curl-post.sh && ./curl-post.sh
-      - name: Stop running process
-        run: docker-compose -p ${{ github.sha }} down
+      - name: Run test suite
+        run: sudo chmod +x ci/test.sh && ci/test.sh ${{ github.sha }}
   Docker-push-backend:
     runs-on: self-hosted
     needs: [Unit-test, Integration-test]
