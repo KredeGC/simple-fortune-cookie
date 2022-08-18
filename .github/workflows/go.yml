@@ -10,13 +10,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build backend
-        run: go build ./backend/
+        run: cd ./backend/ && go build ./backend/
       - name: Build frontend
-        run: go build ./frontend/
+        run: cd ../frontend/ && go build ./frontend/
       - name: Upload build
         uses: actions/upload-artifact@v2
         with: 
-          name: code
+          name: build
           path: .
   Test:
     runs-on: self-hosted
@@ -25,7 +25,7 @@ jobs:
       - name: Download code
         uses: actions/download-artifact@v2
         with:
-          name: code
+          name: build
           path: .
       - name: Test
         run: echo "Test!"
