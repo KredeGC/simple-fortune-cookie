@@ -48,7 +48,7 @@ spec:
         - name: BACKEND_DNS
           value: service-backend
         - name: BACKEND_PORT
-          value: "9000"
+          value: git 9000
 
 ---
 
