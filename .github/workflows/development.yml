@@ -26,6 +26,7 @@ jobs:
           path: |
             .
             !.git
+            !.github
   Docker-frontend:
     runs-on: self-hosted
     needs: Build
