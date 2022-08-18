@@ -6,7 +6,7 @@ on:
       'dev/**'
 
 jobs:
-  Build-backend:
+  Build:
     runs-on: self-hosted
     container: golang:1.18
     steps:
