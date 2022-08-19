@@ -17,11 +17,6 @@ spec:
       containers:
       - name: docker-backend
         image: brugbrug/backend
-        env:
-        - name: FRONTEND_DNS
-          value: service-frontend
-        - name: FRONTEND_PORT
-          value: "8080"
 
 ---
 
@@ -100,9 +95,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: deployment-backend
+  name: service-backend
   labels:
-    app: deployment-backend
+    app: service-backend
 spec:
   type: ClusterIP
   selector:
@@ -119,7 +114,7 @@ kind: Service
 metadata:
   name: service-frontend
   labels:
-    app: deployment-frontend
+    app: service-frontend
 spec:
   type: NodePort
   selector:
