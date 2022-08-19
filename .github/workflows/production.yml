@@ -138,5 +138,4 @@ jobs:
     steps:
       - name: Cnfigure-Kubernetes
         run: |
-        kubectl create configmap configmap-redis
-        kubectl apply -f kubernetes_yaml/
+          kubectl apply -f kubernetes_yaml/
