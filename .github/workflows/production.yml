@@ -118,5 +118,4 @@ jobs:
     needs: [Docker-push-backend, Docker-push-frontend]
     steps:
       - name: Configure Kubernetes
-        run: |
-          kubectl apply -f kubernetes_yaml/
+        run: kubectl apply -f kubernetes_yaml/

@@ -17,6 +17,9 @@ spec:
       containers:
       - name: docker-backend
         image: brugbrug/backend
+        env:
+        - name: REDIS_DNS
+          value: redis-service
 
 ---
 
@@ -131,7 +134,7 @@ kind: Service
 metadata:
   name: redis-service
   labels:
-    app: redis
+    app: redis-service
 spec:
   ports:
     - port: 6379
