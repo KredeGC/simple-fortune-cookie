@@ -113,3 +113,11 @@ jobs:
           context: ./frontend
           push: false
           tags: ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+  Deploy-Kubernetes:
+    runs-on: self-hosted
+    needs: [Docker-build-frontend, Docker-build-backend]
+    steps:
+      - name: Cnfigure-Kubernetes
+        run: |
+        kubectl create configmap configmap-redis
+        kubectl apply -f kubernetes_yaml/
