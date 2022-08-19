@@ -59,8 +59,8 @@ jobs:
         with:
           name: build
           path: .
-      - name: Get request
-        run: echo "TODO 04 Integration testing"
+      - name: Run test suite
+        run: sudo chmod +x ci/test.sh && ci/test.sh ${{ github.sha }}
   Docker-build-backend:
     runs-on: self-hosted
     needs: [Unit-test, Integration-test]

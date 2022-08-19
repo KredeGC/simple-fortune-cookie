@@ -59,8 +59,8 @@ jobs:
         with:
           name: build
           path: .
-      - name: Get request
-        run: echo "TODO 04 Integration testing"
+      - name: Run test suite
+        run: sudo chmod +x ci/test.sh && ci/test.sh ${{ github.sha }}
   Docker-push-backend:
     runs-on: self-hosted
     needs: [Unit-test, Integration-test]
@@ -131,4 +131,4 @@ jobs:
       - name: Stop running process
         run: docker-compose down
       - name: Run docker-compose
-        run: docker-compose up -d
+        run: docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up --build -d
